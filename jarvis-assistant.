@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#030812">
+<title>JARVIS | Personal AI</title>
+
+<style>
+:root {
+  --cyan: #61f5ff;
+  --blue: #248dff;
+  --bg: #030812;
+  --panel: rgba(12, 29, 51, 0.72);
+  --muted: #8299b8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 38%, #0b2440 0%, #030812 48%, #01030a 100%);
+  color: #e7fbff;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .17;
+  background-image:
+    linear-gradient(rgba(75, 190, 255, .12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(75, 190, 255, .12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+.app {
+  width: min(100%, 560px);
+  min-height: 100vh;
+  margin: auto;
+  padding: 25px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.brand {
+  color: var(--cyan);
+  font-weight: bold;
+  letter-spacing: 4px;
+  font-size: 17px;
+}
+
+.online {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #55ffb2;
+  box-shadow: 0 0 12px #55ffb2;
+}
+
+.heading {
+  margin-top: 43px;
+  text-align: center;
+}
+
+.heading h1 {
+  font-size: clamp(25px, 7vw, 34px);
+  letter-spacing: 8px;
+  margin: 0;
+  font-weight: 500;
+  text-shadow: 0 0 22px #168dff;
+}
+
+.heading p {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 3px;
+  margin-top: 12px;
+}
+
+/* Original holographic circular interface */
+
+.reactor {
+  width: min(76vw, 310px);
+  aspect-ratio: 1;
+  margin: 30px auto 20px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.reactor::before {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  border-radius: 50%;
+  background: #087fff;
+  filter: blur(45px);
+  opacity: .17;
+  z-index: -1;
+}
+
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ring-one {
+  inset: 2%;
+  border: 1px solid rgba(63, 211, 255, .55);
+  border-left-color: transparent;
+  border-right-color: rgba(63, 211, 255, .15);
+  box-shadow: 0 0 18px rgba(0, 157, 255, .14);
+  animation: rotate 14s linear infinite;
+}
+
+.ring-two {
+  inset: 9%;
+  border: 2px dashed rgba(50, 152, 255, .6);
+  border-top-color: transparent;
+  animation: rotateBack 20s linear infinite;
+}
+
+.ring-three {
+  inset: 16%;
+  border: 1px solid rgba(100, 245, 255, .7);
+  box-shadow: inset 0 0 20px rgba(0, 153, 255, .13),
+              0 0 16px rgba(0, 153, 255, .18);
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.tick-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(93, 225, 255, .85) 0deg 1deg,
+    transparent 1deg 10deg
+  );
+  mask: radial-gradient(
+    transparent 0 46%,
+    black 46.5% 47.5%,
+    transparent 48% 100%
+  );
+  animation: rotate 60s linear infinite;
+}
+
+.orb {
+  width: 43%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 36% 30%,
+      #d8ffff 0%,
+      #64eaff 8%,
+      #147dd9 25%,
+      #061e49 57%,
+      #020817 76%);
+  box-shadow:
+    0 0 15px #43dfff,
+    0 0 40px rgba(0, 136, 255, .75),
+    inset 0 0 22px #40bfff;
+  animation: orbPulse 3s ease-in-out infinite;
+}
+
+.orb::before {
+  content: "";
+  position: absolute;
+  inset: -9%;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 248, 255, .8);
+  box-shadow: 0 0 12px #078dff;
+}
+
+.orb::after {
+  content: "";
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 18px 6px #60f5ff;
+}
+
+.orb-label {
+  position: absolute;
+  bottom: -35px;
+  white-space: nowrap;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--cyan);
+}
+
+body.listening .orb {
+  animation: listeningPulse 1.2s ease-in-out infinite;
+}
+
+body.speaking .orb {
+  animation: speakingPulse .55s ease-in-out infinite alternate;
+}
+
+body.thinking .ring-two {
+  animation-duration: 2s;
+}
+
+body.thinking .orb {
+  box-shadow: 0 0 24px #b56aff,
+              0 0 65px rgba(142, 64, 255, .7),
+              inset 0 0 22px #7b58ff;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rotateBack {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes breathe {
+  50% { transform: scale(1.04); opacity: .55; }
+}
+
+@keyframes orbPulse {
+  50% { transform: scale(1.045); }
+}
+
+@keyframes listeningPulse {
+  50% { transform: scale(1.12); filter: brightness(1.35); }
+}
+
+@keyframes speakingPulse {
+  from { transform: scale(.97); }
+  to { transform: scale(1.12); }
+}
+
+.status {
+  color: var(--cyan);
+  letter-spacing: 3px;
+  font-size: 11px;
+  text-align: center;
+  min-height: 18px;
+}
+
+.status-sub {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  margin-top: 9px;
+  min-height: 18px;
+}
+
+.panel {
+  width: 100%;
+  margin-top: 24px;
+  padding: 17px;
+  border: 1px solid rgba(80, 190, 255, .22);
+  border-radius: 15px;
+  background: var(--panel);
+  box-shadow: inset 0 0 22px rgba(20, 104, 180, .05);
+  backdrop-filter: blur(12px);
+}
+
+.panel-title {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+#reply {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #e3f8ff;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.controls {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+button {
+  flex: 1;
+  min-height: 50px;
+  border-radius: 12px;
+  padding: 12px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #dffcff;
+  background: rgba(11, 44, 76, .85);
+  border: 1px solid rgba(91, 219, 255, .55);
+  cursor: pointer;
+  transition: .2s;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+#start {
+  background: linear-gradient(110deg, #0755a8, #087eae);
+  box-shadow: 0 0 20px rgba(0, 130, 255, .2);
+}
+
+#stop {
+  flex: .55;
+  background: rgba(67, 21, 42, .65);
+  border-color: rgba(255, 108, 145, .5);
+}
+
+.quick-title {
+  margin-top: 25px;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+  align-self: flex-start;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.quick-actions button {
+  min-height: 43px;
+  font-size: 10px;
+  padding: 8px 4px;
+  background: rgba(9, 24, 43, .8);
+  border-color: rgba(80, 180, 255, .25);
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 28px;
+  color: #526d8c;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+@media (max-height: 760px) {
+  .heading { margin-top: 25px; }
+  .reactor { width: min(62vw, 255px); margin: 18px auto; }
+  .panel { margin-top: 16px; }
+  .quick-title { margin-top: 17px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">J.A.R.V.I.S.</div>
+    <div class="online"><span class="dot"></span> SYSTEM ONLINE</div>
+  </header>
+
+  <section class="heading">
+    <h1>PERSONAL AI</h1>
+    <p>VOICE • INTELLIGENCE • CONTROL</p>
+  </section>
+
+  <div class="reactor" aria-label="Animated holographic AI core">
+    <div class="ring ring-one"></div>
+    <div class="ring ring-two"></div>
+    <div class="tick-ring"></div>
+    <div class="ring ring-three"></div>
+    <div class="orb">
+      <div class="orb-label">J.A.R.V.I.S. CORE</div>
+    </div>
+  </div>
+
+  <div id="status" class="status">SYSTEM STANDBY</div>
+  <div id="statusSub" class="status-sub">Tap Activate to begin</div>
+
+  <section class="panel">
+    <div class="panel-title">ASSISTANT RESPONSE</div>
+    <div id="reply">Good day. JARVIS is ready when you are.</div>
+  </section>
+
+  <div class="controls">
+    <button id="start">◉ &nbsp; ACTIVATE JARVIS</button>
+    <button id="stop">■ STOP</button>
+  </div>
+
+  <div class="quick-title">QUICK COMMANDS</div>
+  <div class="quick-actions">
+    <button data-command="What time is it?">◷ TIME</button>
+    <button data-command="What is today's date?">▦ DATE</button>
+    <button data-command="Open YouTube">▷ YOUTUBE</button>
+    <button data-command="Open Google">⌕ GOOGLE</button>
+    <button data-command="Open Google Maps">⌖ MAPS</button>
+    <button data-command="Tell me an interesting fact">✧ AI FACT</button>
+  </div>
+
+  <div class="footer">PERSONAL ASSISTANT SYSTEM • MOBILE INTERFACE</div>
+</div>
+
+<script>
+const WORKER_URL =
+  "https://jarvis-brain.divyanshuchaudhary2012.workers.dev/";
+
+const status = document.getElementById("status");
+const statusSub = document.getElementById("statusSub");
+const reply = document.getElementById("reply");
+const start = document.getElementById("start");
+const stop = document.getElementById("stop");
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+let active = false;
+let waitingForCommand = false;
+let requestNumber = 0;
+
+function setStatus(main, sub, mode = "") {
+  status.textContent = main;
+  statusSub.textContent = sub;
+  document.body.classList.remove(
+    "listening", "speaking", "thinking"
+  );
+  if (mode) document.body.classList.add(mode);
+}
+
+function speak(text) {
+  const message = String(text || "I have no response.");
+  reply.textContent = message;
+
+  if (!("speechSynthesis" in window)) {
+    setStatus("RESPONSE READY", "Text-to-speech unavailable");
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(message);
+  utterance.lang = "en-IN";
+  utterance.rate = 1;
+  utterance.pitch = 0.95;
+
+  utterance.onstart = () => {
+    setStatus("JARVIS SPEAKING", "Delivering response", "speaking");
+  };
+
+  utterance.onend = () => {
+    if (active) {
+      setStatus("LISTENING", "Say Hey Jarvis followed by a command",
+        "listening");
+    } else {
+      setStatus("SYSTEM STANDBY", "Tap Activate to begin");
+    }
+  };
+
+  utterance.onerror = () => {
+    if (active) {
+      setStatus("LISTENING", "Ready for your next command", "listening");
+    }
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
+function openWebsite(url, message) {
+  speak(message);
+  // These commands open websites, not arbitrary installed apps.
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function getLocalAnswer(command) {
+  const q = command.toLowerCase().trim();
+
+  if (/\b(time|current time)\b/.test(q)) {
+    speak("The time is " +
+      new Date().toLocaleTimeString("en-IN", {
+        hour: "numeric", minute: "2-digit"
+      }));
+    return true;
+  }
+
+  if (/\b(date|today's date|today is|what day)\b/.test(q)) {
+    speak("Today is " +
+      new Date().toLocaleDateString("en-IN", {
+        weekday: "long", day: "numeric",
+        month: "long", year: "numeric"
+      }));
+    return true;
+  }
+
+  if (/\b(open|launch|go to)\s+(youtube|you tube)\b/.test(q)) {
+    openWebsite("https://m.youtube.com/", "Opening YouTube.");
+    return true;
+  }
+
+  if (/\b(open|launch|go to)\s+(google maps|maps)\b/.test(q)) {
+    openWebsite("https://maps.google.com/", "Opening Google Maps.");
+    return true;
+  }
+
+  if (/\b(open|launch|go to)\s+google\b/.test(q)) {
+    openWebsite("https://www.google.com/", "Opening Google.");
+    return true;
+  }
+
+  if (/\b(search|google search)\s+for\b/.test(q)) {
+    const searchTerm = q.replace(/^.*?\bfor\b/, "").trim();
+    if (searchTerm) {
+      openWebsite(
+        "https://www.google.com/search?q=" +
+          encodeURIComponent(searchTerm),
+        "Searching the web for " + searchTerm
+      );
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function askGemini(command) {
+  const thisRequest = ++requestNumber;
+
+  setStatus("THINKING", "Connecting to the AI brain", "thinking");
+  reply.textContent = "Processing your question...";
+
+  try {
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: command })
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("The AI server returned an invalid response.");
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || "AI request failed.");
+    }
+
+    if (typeof data.reply !== "string" || !data.reply.trim()) {
+      throw new Error("No answer was returned.");
+    }
+
+    // Ignore an older answer if a newer command was submitted.
+    if (thisRequest !== requestNumber) return;
+
+    speak(data.reply);
+  } catch (error) {
+    console.error("JARVIS AI error:", error);
+    if (thisRequest !== requestNumber) return;
+
+    speak("Sorry, I couldn't connect to my AI brain. Check your internet connection and try again.");
+    setStatus("AI CONNECTION ERROR", "Check connection and retry");
+  }
+}
+
+async function answer(command) {
+  const text = command.trim();
+  if (!text) return;
+
+  // Handle device/browser-friendly commands locally first.
+  if (getLocalAnswer(text)) return;
+
+  // All other questions are sent to Gemini.
+  await askGemini(text);
+}
+
+function stopListening() {
+  active = false;
+  waitingForCommand = false;
+  requestNumber++;
+
+  if (recognition) {
+    recognition.onend = null;
+    try { recognition.stop(); } catch (_) {}
+    recognition = null;
+  }
+
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  setStatus("SYSTEM STANDBY", "Voice listening stopped");
+}
+
+start.addEventListener("click", () => {
+  if (!SpeechRecognition) {
+    setStatus("VOICE INPUT UNAVAILABLE",
+      "Try Chrome on Android and allow microphone access");
+    reply.textContent =
+      "This browser does not support speech recognition.";
+    return;
+  }
+
+  if (active) {
+    setStatus("ALREADY ACTIVE", "Say Hey Jarvis to give a command",
+      "listening");
+    return;
+  }
+
+  active = true;
+  waitingForCommand = false;
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    if (active) {
+      setStatus("LISTENING", "Say Hey Jarvis followed by a command",
+        "listening");
+    }
+  };
+
+  recognition.onerror = (event) => {
+    console.warn("Speech recognition error:", event.error);
+
+    if (event.error === "not-allowed" ||
+        event.error === "service-not-allowed") {
+      active = false;
+      setStatus("MICROPHONE BLOCKED",
+        "Allow microphone access in your browser settings");
+    } else if (event.error === "no-speech") {
+      setStatus("LISTENING", "Didn't catch that. Try speaking again",
+        "listening");
+    } else if (event.error !== "aborted" && active) {
+      setStatus("VOICE ERROR", event.error);
+    }
+  };
+
+  recognition.onresult = (event) => {
+    const result = event.results[event.results.length - 1];
+    if (!result || !result.isFinal) return;
+
+    const text = result[0].transcript.trim();
+    if (!text) return;
+
+    reply.textContent = "Heard: " + text;
+
+    const lower = text.toLowerCase();
+    const wakeWord = /\b(?:hey\s+)?jarvis\b/i;
+
+    if (wakeWord.test(lower)) {
+      const command = lower.replace(wakeWord, "").trim();
+
+      if (command) {
+        waitingForCommand = false;
+        answer(command);
+      } else {
+        waitingForCommand = true;
+        speak("Yes, I'm listening. What can I do for you?");
+      }
+    } else if (waitingForCommand) {
+      waitingForCommand = false;
+      answer(text);
+    }
+  };
+
+  recognition.onend = () => {
+    if (active && recognition) {
+      try {
+        recognition.start();
+      } catch (error) {
+        console.log("Recognition restart:", error);
+      }
+    }
+  };
+
+  try {
+    recognition.start();
+    speak("JARVIS activated. Say Hey Jarvis.");
+  } catch (error) {
+    active = false;
+    setStatus("TAP TO RETRY", "Voice recognition could not start");
+  }
+});
+
+stop.addEventListener("click", stopListening);
+
+document.querySelectorAll("[data-command]").forEach(button => {
+  button.addEventListener("click", () => {
+    const command = button.dataset.command;
+    answer(command);
+  });
+});
+</script>
+</body>
+</html>
